@@ -1,6 +1,7 @@
 import { Timer } from './timer'
 import { PubNubProvider, usePubNub } from './pubnub-context'
 import { useTheme } from './theme-context'
+import { TIMER_CHANNEL } from './secrets'
 import { Container, Typography, Box, Chip, IconButton, Tooltip } from '@mui/material'
 import { 
   FiberManualRecord as FiberManualRecordIcon,
@@ -79,22 +80,24 @@ function AppContent() {
         <Typography variant="h1" component="h1" gutterBottom>
           Kid Timer
         </Typography>
-        <Chip
-          icon={<FiberManualRecordIcon sx={{ fontSize: '8px !important' }} />}
-          label={isConnected ? 'Synced with all users' : 'Connecting...'}
-          color={isConnected ? 'success' : 'error'}
-          variant="outlined"
-          size="small"
-          sx={{
-            '& .MuiChip-icon': {
-              animation: isConnected ? 'pulse 2s infinite' : 'none',
-            },
-            '@keyframes pulse': {
-              '0%, 100%': { opacity: 1 },
-              '50%': { opacity: 0.5 },
-            },
-          }}
-        />
+        <Tooltip title={`PubNub Channel: ${TIMER_CHANNEL}`}>
+          <Chip
+            icon={<FiberManualRecordIcon sx={{ fontSize: '8px !important' }} />}
+            label={isConnected ? 'Synced with all users' : 'Connecting...'}
+            color={isConnected ? 'success' : 'error'}
+            variant="outlined"
+            size="small"
+            sx={{
+              '& .MuiChip-icon': {
+                animation: isConnected ? 'pulse 2s infinite' : 'none',
+              },
+              '@keyframes pulse': {
+                '0%, 100%': { opacity: 1 },
+                '50%': { opacity: 0.5 },
+              },
+            }}
+          />
+        </Tooltip>
       </Box>
       <Timer initialMinutes={5} />
     </Container>

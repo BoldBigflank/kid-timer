@@ -1,0 +1,25 @@
+{
+  "name": "kid-timer",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.2",
+    "@mui/material": "^7.3.2",
+    "preact": "^10.27.2",
+    "pubnub": "^10.0.0"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.2",
+    "dotenv": "^17.2.2",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.6"
+  }
+}

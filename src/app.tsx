@@ -79,9 +79,6 @@ function AppContent() {
         <Typography variant="h1" component="h1" gutterBottom>
           Kid Timer
         </Typography>
-        <Typography variant="subtitle1" component="p" sx={{ mb: 1.5 }}>
-          A fun timer for kids with visual progress!
-        </Typography>
         <Chip
           icon={<FiberManualRecordIcon sx={{ fontSize: '8px !important' }} />}
           label={isConnected ? 'Synced with all users' : 'Connecting...'}

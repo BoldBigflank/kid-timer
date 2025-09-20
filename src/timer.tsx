@@ -490,32 +490,6 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
             color="error"
             size="small"
             startIcon={<RemoveIcon sx={{ fontSize: '16px !important' }} />}
-            onClick={() => removeTime(1)}
-            disabled={totalSeconds <= 60}
-            aria-label="Remove 1 minute from timer"
-            sx={{
-              minWidth: '60px',
-              px: 1,
-              fontSize: '0.875rem',
-              '@media (max-width:480px)': {
-                minWidth: '55px',
-                px: 0.75,
-                fontSize: '0.8rem',
-              },
-              '@media (max-width:360px)': {
-                minWidth: '50px',
-                px: 0.5,
-                fontSize: '0.75rem',
-              },
-            }}
-          >
-            1m
-          </Button>
-          <Button 
-            variant="contained"
-            color="error"
-            size="small"
-            startIcon={<RemoveIcon sx={{ fontSize: '16px !important' }} />}
             onClick={() => removeTime(5)}
             disabled={totalSeconds <= 300}
             aria-label="Remove 5 minutes from timer"
@@ -536,6 +510,32 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
             }}
           >
             5m
+          </Button>
+          <Button 
+            variant="contained"
+            color="error"
+            size="small"
+            startIcon={<RemoveIcon sx={{ fontSize: '16px !important' }} />}
+            onClick={() => removeTime(1)}
+            disabled={totalSeconds <= 60}
+            aria-label="Remove 1 minute from timer"
+            sx={{
+              minWidth: '60px',
+              px: 1,
+              fontSize: '0.875rem',
+              '@media (max-width:480px)': {
+                minWidth: '55px',
+                px: 0.75,
+                fontSize: '0.8rem',
+              },
+              '@media (max-width:360px)': {
+                minWidth: '50px',
+                px: 0.5,
+                fontSize: '0.75rem',
+              },
+            }}
+          >
+            1m
           </Button>
           <Button 
             variant="contained"

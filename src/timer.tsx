@@ -64,6 +64,7 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
       startTime: null,
       endTime: null,
       isRunning: false,
+      pausedRemainingMs: undefined, // Clear paused state when resetting
       lastUpdated: Date.now()
     })
   }, [initialMinutes, publishTimerState])
@@ -113,6 +114,7 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
           publishTimerState({
             ...timerState,
             isRunning: false,
+            pausedRemainingMs: undefined, // Clear paused state when completed
             lastUpdated: now
           })
         }
@@ -136,6 +138,7 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
         startTime,
         endTime, // Keep endTime to show completion
         isRunning: false,
+        pausedRemainingMs: undefined, // Clear paused state when completed
         lastUpdated: Date.now()
       })
     }
@@ -147,6 +150,7 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
       startTime,
       endTime,
       isRunning,
+      pausedRemainingMs: undefined, // No paused state during initialization
       lastUpdated: Date.now()
     }
     console.log('📤 Publishing current state (initialization):', currentState)
@@ -183,15 +187,18 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
     // Timer is running - calculate remaining time from end time
     remainingMs = Math.max(0, endTime - currentTime)
   } else if (!isRunning && startTime && endTime) {
-    // Timer was completed or paused
+    // Timer was completed - check if it actually completed
     const timeRemaining = Math.max(0, endTime - currentTime)
     if (timeRemaining === 0) {
       // Timer completed - show 0 remaining time
       remainingMs = 0
     } else {
-      // Timer was paused - use the duration that was set when paused
+      // This shouldn't happen with the new pause logic, but handle it gracefully
       remainingMs = durationMs
     }
+  } else if (!isRunning && timerState?.pausedRemainingMs !== undefined) {
+    // Timer was paused - use the stored paused remaining time
+    remainingMs = timerState.pausedRemainingMs
   } else {
     // Timer not started or reset - use full duration
     remainingMs = durationMs
@@ -217,14 +224,24 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
 
   const handleStart = () => {
     const now = Date.now()
+    let timeToRun = durationMs
+    
+    // If timer was paused, use the stored paused remaining time
+    if (!isRunning && timerState?.pausedRemainingMs !== undefined) {
+      timeToRun = timerState.pausedRemainingMs
+    }
+    
     const newStartTime = now
-    const newEndTime = now + durationMs
+    const newEndTime = now + timeToRun
     
     console.log('▶️ Starting timer:', {
       now,
       newStartTime,
       newEndTime,
       durationMs,
+      timeToRun,
+      pausedRemainingMs: timerState?.pausedRemainingMs,
+      wasPaused: !isRunning && timerState?.pausedRemainingMs !== undefined,
       willRunFor: (newEndTime - newStartTime) / 1000 + ' seconds'
     })
     
@@ -233,10 +250,11 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
     setIsRunning(true)
     
     const stateToPublish = {
-      durationMs,
+      durationMs, // Keep original duration
       startTime: newStartTime,
       endTime: newEndTime,
       isRunning: true,
+      pausedRemainingMs: undefined, // Clear paused state when resuming
       lastUpdated: now
     }
     
@@ -245,20 +263,21 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
   }
 
   const handlePause = () => {
-    // When pausing, calculate remaining time and update duration
-    const newDurationMs = remainingMs
+    // When pausing, store the remaining time and clear start/end times
+    const now = Date.now()
+    const currentRemainingMs = remainingMs // Calculate this before state changes
     
-    setDurationMs(newDurationMs)
     setStartTime(null)
     setEndTime(null)
     setIsRunning(false)
     
     publishTimerState({
-      durationMs: newDurationMs,
+      durationMs, // Keep original duration unchanged
       startTime: null,
       endTime: null,
       isRunning: false,
-      lastUpdated: Date.now()
+      pausedRemainingMs: currentRemainingMs, // Store remaining time when paused
+      lastUpdated: now
     })
   }
 
@@ -280,6 +299,7 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
         startTime,
         endTime: newEndTime,
         isRunning: true,
+        pausedRemainingMs: undefined,
         lastUpdated: Date.now()
       })
     } else if (isComplete) {
@@ -293,15 +313,21 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
         startTime: null,
         endTime: null,
         isRunning: false,
+        pausedRemainingMs: undefined,
         lastUpdated: Date.now()
       })
     } else {
       // If not running and not completed, just update duration
+      // If paused, adjust the paused remaining time proportionally
+      const currentPausedMs = timerState?.pausedRemainingMs
+      const adjustedPausedMs = currentPausedMs ? currentPausedMs + additionalMs : undefined
+      
       publishTimerState({
         durationMs: newDurationMs,
         startTime,
         endTime,
         isRunning,
+        pausedRemainingMs: adjustedPausedMs,
         lastUpdated: Date.now()
       })
     }
@@ -327,6 +353,7 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
         startTime,
         endTime: newEndTime,
         isRunning: true,
+        pausedRemainingMs: undefined,
         lastUpdated: Date.now()
       })
     } else if (isComplete) {
@@ -340,15 +367,21 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
         startTime: null,
         endTime: null,
         isRunning: false,
+        pausedRemainingMs: undefined,
         lastUpdated: Date.now()
       })
     } else {
       // If not running and not completed, just update duration
+      // If paused, adjust the paused remaining time proportionally
+      const currentPausedMs = timerState?.pausedRemainingMs
+      const adjustedPausedMs = currentPausedMs ? Math.max(60 * 1000, currentPausedMs - reductionMs) : undefined
+      
       publishTimerState({
         durationMs: newDurationMs,
         startTime,
         endTime,
         isRunning,
+        pausedRemainingMs: adjustedPausedMs,
         lastUpdated: Date.now()
       })
     }

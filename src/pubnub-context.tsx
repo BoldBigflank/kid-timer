@@ -8,6 +8,7 @@ export interface TimerState {
   startTime: number | null // Epoch timestamp when timer started (null if not started)
   endTime: number | null // Epoch timestamp when timer should end (null if not started)
   isRunning: boolean
+  pausedRemainingMs?: number // Remaining time when paused (null if not paused)
   lastUpdated: number // When this state was published
 }
 
@@ -110,7 +111,8 @@ export function PubNubProvider({ children }: { children: any }) {
       lastPublishedState.current.durationMs !== state.durationMs ||
       lastPublishedState.current.startTime !== state.startTime ||
       lastPublishedState.current.endTime !== state.endTime ||
-      lastPublishedState.current.isRunning !== state.isRunning
+      lastPublishedState.current.isRunning !== state.isRunning ||
+      lastPublishedState.current.pausedRemainingMs !== state.pausedRemainingMs
 
     console.log('📊 State changed:', stateChanged, 'Last published:', lastPublishedState.current)
 

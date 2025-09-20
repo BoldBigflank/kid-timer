@@ -14,7 +14,8 @@
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
     "preact": "^10.27.2",
-    "pubnub": "^10.0.0"
+    "pubnub": "^10.0.0",
+    "svg64": "^2.0.0"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.2",

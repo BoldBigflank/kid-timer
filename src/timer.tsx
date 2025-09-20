@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks'
 import { usePubNub, type TimerState } from './pubnub-context'
+import { useDynamicFavicon } from './use-dynamic-favicon'
 import { 
   Box, 
   Button, 
@@ -206,6 +207,13 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
 
   const progress = totalSeconds > 0 ? ((totalSeconds - remainingSeconds) / totalSeconds) * 100 : 0
   const progressColor = isComplete ? '#3b82f6' : '#ef4444' // blue when complete, red while running
+
+  // Update favicon dynamically with timer progress
+  useDynamicFavicon({ 
+    progress, 
+    isRunning, 
+    isComplete: Boolean(isComplete) 
+  })
 
   const handleStart = () => {
     const now = Date.now()

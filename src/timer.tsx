@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'preact/hooks'
 import { connect } from 'redux-zero/preact'
-import { useDynamicFavicon } from './use-dynamic-favicon'
-import { useWakeLock } from './use-wake-lock'
+import { useDynamicFavicon } from './hooks/use-dynamic-favicon'
+import { useWakeLock } from './hooks/use-wake-lock'
 import { 
   Box, 
   Button, 

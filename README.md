@@ -51,18 +51,21 @@ A real-time synchronized timer application built with Preact, Material-UI, and P
 
 ```
 src/
-├── app.tsx              # Main app component with theming
-├── timer.tsx            # Core timer component
-├── main.tsx             # App entry point
-├── store/               # Redux Zero state management
-│   ├── index.ts         # Store configuration and state types
-│   ├── actions.ts       # Timer and UI actions
+├── components/          # UI components
+│   ├── app.tsx         # Main app component
+│   └── timer.tsx       # Core timer component
+├── config/             # Configuration
+│   └── config.ts       # PubNub and app configuration
+├── contexts/           # React contexts
+│   └── theme-context.tsx # Theme context provider
+├── hooks/              # Custom React hooks
+│   ├── use-wake-lock.tsx      # Wake lock hook
+│   └── use-dynamic-favicon.tsx # Dynamic favicon hook
+├── store/              # Redux Zero state management
+│   ├── index.ts        # Store configuration and state types
+│   ├── actions.ts      # Timer and UI actions
 │   └── pubnub-integration.tsx # Real-time sync component
-├── theme.tsx            # Material-UI theme configuration
-├── theme-context.tsx    # Theme context provider
-├── pubnub-context.tsx   # PubNub client context
-├── use-wake-lock.tsx    # Wake lock hook
-└── use-dynamic-favicon.tsx # Dynamic favicon hook
+└── main.tsx            # App entry point
 ```
 
 ## Usage

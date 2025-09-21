@@ -194,8 +194,8 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
   // Calculate remaining time based on current state
   let remainingMs: number
   if (isRunning && endTime) {
-    // Timer is running - calculate remaining time from end time
-    remainingMs = Math.max(0, endTime - currentTime)
+    // Timer is running - calculate remaining time from end time using real-time
+    remainingMs = Math.max(0, endTime - Date.now())
   } else if (!isRunning && startTime && endTime) {
     // Timer was completed - check if it actually completed
     const timeRemaining = Math.max(0, endTime - currentTime)
@@ -214,7 +214,9 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
     remainingMs = durationMs
   }
   
-  const remainingSeconds = Math.ceil(remainingMs / 1000)
+  // Calculate remaining seconds with ceiling logic
+  // 60000ms -> 60s (1:00), 59999ms -> 60s (1:00), 1000ms -> 1s (0:01), 999ms -> 1s (0:01)
+  const remainingSeconds = remainingMs <= 0 ? 0 : Math.max(1, Math.ceil(remainingMs / 1000))
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -256,9 +258,9 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
       willRunFor: (newEndTime - newStartTime) / 1000 + ' seconds'
     })
     
+    setIsRunning(true)
     setStartTime(newStartTime)
     setEndTime(newEndTime)
-    setIsRunning(true)
     
     const stateToPublish = {
       durationMs, // Keep original duration

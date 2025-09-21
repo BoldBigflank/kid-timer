@@ -199,19 +199,17 @@ function TimerComponent({
             alignItems: 'center',
             justifyContent: 'center',
             // Make the circle take up most of the available space
-            width: 'min(80vw, 80vh, 500px)',
-            height: 'min(80vw, 80vh, 500px)',
+            '--circle-size': 'min(80vw, 80vh, 500px)',
+            width: 'var(--circle-size)',
+            height: 'var(--circle-size)',
             '@media (max-width:480px)': {
-              width: 'min(85vw, 75vh, 400px)',
-              height: 'min(85vw, 75vh, 400px)',
+              '--circle-size': 'min(85vw, 75vh, 400px)',
             },
             '@media (max-width:360px)': {
-              width: 'min(90vw, 70vh, 350px)',
-              height: 'min(90vw, 70vh, 350px)',
+              '--circle-size': 'min(90vw, 70vh, 350px)',
             },
             '@media (max-height:600px) and (orientation: landscape)': {
-              width: 'min(60vw, 85vh, 400px)',
-              height: 'min(60vw, 85vh, 400px)',
+              '--circle-size': 'min(60vw, 85vh, 400px)',
             },
           }}
         >
@@ -257,19 +255,13 @@ function TimerComponent({
                 variant="h2" 
                 component="div"
                 sx={{ 
-                  fontSize: 'clamp(2.5rem, 8vw, 6rem)',
+                  fontSize: 'calc(var(--circle-size) * 0.18)',
                   fontWeight: 'bold',
                   color: 'text.primary',
                   lineHeight: 1,
                   fontFamily: 'Courier New, monospace',
                   '@media (max-width:480px)': {
-                    fontSize: 'clamp(2rem, 7vw, 4.5rem)',
-                  },
-                  '@media (max-width:360px)': {
-                    fontSize: 'clamp(1.8rem, 6vw, 3.5rem)',
-                  },
-                  '@media (max-height:600px) and (orientation: landscape)': {
-                    fontSize: 'clamp(1.5rem, 6vh, 3rem)',
+                    fontSize: 'calc(var(--circle-size) * 0.22)',
                   },
                 }}
               >
@@ -279,18 +271,12 @@ function TimerComponent({
                 variant="body1" 
                 component="div"
                 sx={{ 
-                  fontSize: 'clamp(1rem, 2.5vw, 2rem)',
+                  fontSize: 'calc(var(--circle-size) * 0.06)',
                   color: 'text.secondary',
                   mt: 0.5,
                   fontFamily: 'Courier New, monospace',
                   '@media (max-width:480px)': {
-                    fontSize: 'clamp(0.875rem, 2.2vw, 1.5rem)',
-                  },
-                  '@media (max-width:360px)': {
-                    fontSize: 'clamp(0.75rem, 2vw, 1.25rem)',
-                  },
-                  '@media (max-height:600px) and (orientation: landscape)': {
-                    fontSize: 'clamp(0.8rem, 2vh, 1.2rem)',
+                    fontSize: 'calc(var(--circle-size) * 0.08)',
                   },
                 }}
               >

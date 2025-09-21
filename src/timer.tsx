@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks'
 import { usePubNub, type TimerState } from './pubnub-context'
 import { useDynamicFavicon } from './use-dynamic-favicon'
+import { useWakeLock } from './use-wake-lock'
 import { 
   Box, 
   Button, 
@@ -28,6 +29,7 @@ interface TimerProps {
 
 export function Timer({ initialMinutes = 5 }: TimerProps) {
   const { publishTimerState, timerState, isConnected } = usePubNub()
+  const { setWakeLockActive, isSupported: wakeLockSupported } = useWakeLock()
   const [durationMs, setDurationMs] = useState(initialMinutes * 60 * 1000)
   const [startTime, setStartTime] = useState<number | null>(null)
   const [endTime, setEndTime] = useState<number | null>(null)
@@ -45,6 +47,14 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
     }, 1000)
     return () => clearInterval(interval)
   }, [])
+
+  // Manage wake lock based on timer running state
+  useEffect(() => {
+    if (wakeLockSupported) {
+      console.log(`🔒 Wake lock ${isRunning ? 'activating' : 'deactivating'} - timer is ${isRunning ? 'running' : 'stopped'}`)
+      setWakeLockActive(isRunning)
+    }
+  }, [isRunning, setWakeLockActive, wakeLockSupported])
 
   // Calculate if timer is complete (needs to be before useEffect that uses it)
   const isComplete = !isRunning && startTime && endTime && currentTime >= endTime

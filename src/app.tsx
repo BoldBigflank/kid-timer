@@ -15,38 +15,53 @@ function AppContent() {
 
   return (
     <Container 
-      maxWidth="sm" 
+      maxWidth={false}
       sx={{ 
-        minHeight: '100dvh', // Dynamic viewport height for mobile
+        minHeight: '100dvh',
+        maxHeight: '100dvh', // Prevent y overflow
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         py: 2,
+        overflow: 'hidden', // Prevent scrolling
         background: mode === 'light' 
           ? 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
           : 'linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%)',
         '@media (max-width:480px)': {
           justifyContent: 'flex-start',
-          pt: 4,
+          pt: 2,
+          py: 1,
         },
         '@media (max-height:600px) and (orientation: landscape)': {
-          justifyContent: 'flex-start',
-          pt: 2,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          py: 1,
+          px: 2,
+          gap: 2,
+          maxWidth: '100vw',
         },
       }}
     >
+      {/* Header Section */}
       <Box 
         sx={{ 
           mb: 3, 
           textAlign: 'center',
           position: 'relative',
           width: '100%',
+          flexShrink: 0,
           '@media (max-width:480px)': {
             mb: 2,
           },
           '@media (max-height:600px) and (orientation: landscape)': {
-            mb: 1.5,
+            position: 'absolute',
+            top: 8,
+            left: 16,
+            width: 'auto',
+            mb: 0,
+            zIndex: 10,
           },
         }}
       >
@@ -59,6 +74,12 @@ function AppContent() {
             '@media (max-width:480px)': {
               right: -8,
               top: -8,
+            },
+            '@media (max-height:600px) and (orientation: landscape)': {
+              position: 'fixed',
+              top: 8,
+              right: 16,
+              zIndex: 20,
             },
           }}
         >
@@ -77,9 +98,21 @@ function AppContent() {
             </IconButton>
           </Tooltip>
         </Box>
-        <Typography variant="h1" component="h1" gutterBottom>
+        
+        <Typography 
+          variant="h1" 
+          component="h1" 
+          gutterBottom
+          sx={{
+            '@media (max-height:600px) and (orientation: landscape)': {
+              fontSize: '1.5rem',
+              mb: 0.5,
+            },
+          }}
+        >
           Kid Timer
         </Typography>
+        
         <Tooltip title={`PubNub Channel: ${TIMER_CHANNEL}`}>
           <Chip
             icon={<FiberManualRecordIcon sx={{ fontSize: '8px !important' }} />}
@@ -95,11 +128,32 @@ function AppContent() {
                 '0%, 100%': { opacity: 1 },
                 '50%': { opacity: 0.5 },
               },
+              '@media (max-height:600px) and (orientation: landscape)': {
+                fontSize: '0.7rem',
+                height: '20px',
+              },
             }}
           />
         </Tooltip>
       </Box>
-      <Timer initialMinutes={5} />
+      
+      {/* Timer Section - Takes remaining space */}
+      <Box 
+        sx={{
+          flex: 1,
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: 0, // Allow flex shrinking
+          '@media (max-height:600px) and (orientation: landscape)': {
+            width: '100%',
+            height: '100%',
+          },
+        }}
+      >
+        <Timer initialMinutes={5} />
+      </Box>
     </Container>
   )
 }

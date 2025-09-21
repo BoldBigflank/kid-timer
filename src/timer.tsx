@@ -399,299 +399,383 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
   }
 
   return (
+    <>
     <Box 
       sx={{ 
+        width: '100%',
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        justifyContent: 'center',
         gap: 3,
         p: 2,
-        maxWidth: 400,
-        mx: 'auto',
-        width: '100%',
         boxSizing: 'border-box',
         '@media (max-width:480px)': {
-          p: 1.5,
           gap: 2.5,
+          p: 1.5,
         },
         '@media (max-width:360px)': {
-          p: 1,
           gap: 2,
+          p: 1,
         },
         '@media (max-height:600px) and (orientation: landscape)': {
-          gap: 2,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 4,
           p: 1,
+          height: '100%',
         },
       }}
     >
+      {/* Progress Section */}
       <Box 
-        sx={{ 
-          position: 'relative',
+        sx={{
           display: 'flex',
-          alignItems: 'center',
           justifyContent: 'center',
-          '@media (max-width:480px)': {
-            transform: 'scale(0.9)',
-          },
-          '@media (max-width:360px)': {
-            transform: 'scale(0.8)',
-          },
+          alignItems: 'center',
+          flexShrink: 0,
           '@media (max-height:600px) and (orientation: landscape)': {
-            transform: 'scale(0.75)',
+            flex: '0 0 auto',
           },
         }}
       >
-        <CircularProgress
-          variant="determinate"
-          value={progress}
-          size={200}
-          thickness={4}
-          sx={{
-            color: progressColor,
-            '& .MuiCircularProgress-circle': {
-              strokeLinecap: 'round',
-              transition: 'stroke-dashoffset 0.3s ease, stroke 0.5s ease',
-            },
-          }}
-        />
-        <CircularProgress
-          variant="determinate"
-          value={100}
-          size={200}
-          thickness={4}
-          sx={{
-            color: 'divider',
-            position: 'absolute',
-            opacity: 0.3,
-          }}
-        />
         <Box 
           sx={{ 
-            position: 'absolute',
-            textAlign: 'center',
-            fontFamily: 'Courier New, monospace',
-          }}
-          role="timer"
-          aria-label={`Timer showing ${formatTime(remainingSeconds)} remaining out of ${formatTime(totalSeconds)} total`}
-          aria-live="polite"
-        >
-          <Typography 
-            variant="h2" 
-            component="div"
-            sx={{ 
-              fontSize: '2.5rem',
-              fontWeight: 'bold',
-              color: 'text.primary',
-              lineHeight: 1,
-              fontFamily: 'Courier New, monospace',
-              '@media (max-width:480px)': {
-                fontSize: '2.25rem',
-              },
-              '@media (max-width:360px)': {
-                fontSize: '2rem',
-              },
-              '@media (max-height:600px) and (orientation: landscape)': {
-                fontSize: '1.75rem',
-              },
-            }}
-          >
-            {formatTime(remainingSeconds)}
-          </Typography>
-          <Typography 
-            variant="body1" 
-            component="div"
-            sx={{ 
-              fontSize: '1rem',
-              color: 'text.secondary',
-              mt: 0.5,
-              fontFamily: 'Courier New, monospace',
-              '@media (max-width:480px)': {
-                fontSize: '0.875rem',
-              },
-              '@media (max-width:360px)': {
-                fontSize: '0.75rem',
-              },
-              '@media (max-height:600px) and (orientation: landscape)': {
-                fontSize: '0.75rem',
-              },
-            }}
-          >
-            / {formatTime(totalSeconds)}
-          </Typography>
-        </Box>
-      </Box>
-
-      <Stack spacing={3} sx={{ width: '100%' }}>
-        <Stack 
-          direction="row" 
-          spacing={0.5} 
-          justifyContent="center" 
-          flexWrap="wrap"
-          sx={{
-            gap: 0.5,
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             '@media (max-width:480px)': {
-              gap: 0.375,
+              transform: 'scale(0.9)',
             },
             '@media (max-width:360px)': {
-              gap: 0.25,
+              transform: 'scale(0.8)',
+            },
+            '@media (max-height:600px) and (orientation: landscape)': {
+              transform: 'scale(0.8)',
             },
           }}
         >
-          <Button 
-            variant="contained"
-            color="error"
-            size="small"
-            startIcon={<RemoveIcon sx={{ fontSize: '16px !important' }} />}
-            onClick={() => removeTime(5)}
-            disabled={totalSeconds <= 300}
-            aria-label="Remove 5 minutes from timer"
-            sx={{
-              minWidth: '60px',
-              px: 1,
-              fontSize: '0.875rem',
-              '@media (max-width:480px)': {
-                minWidth: '55px',
-                px: 0.75,
-                fontSize: '0.8rem',
-              },
-              '@media (max-width:360px)': {
-                minWidth: '50px',
-                px: 0.5,
-                fontSize: '0.75rem',
-              },
-            }}
-          >
-            5m
-          </Button>
-          <Button 
-            variant="contained"
-            color="error"
-            size="small"
-            startIcon={<RemoveIcon sx={{ fontSize: '16px !important' }} />}
-            onClick={() => removeTime(1)}
-            disabled={totalSeconds <= 60}
-            aria-label="Remove 1 minute from timer"
-            sx={{
-              minWidth: '60px',
-              px: 1,
-              fontSize: '0.875rem',
-              '@media (max-width:480px)': {
-                minWidth: '55px',
-                px: 0.75,
-                fontSize: '0.8rem',
-              },
-              '@media (max-width:360px)': {
-                minWidth: '50px',
-                px: 0.5,
-                fontSize: '0.75rem',
-              },
-            }}
-          >
-            1m
-          </Button>
-          <Button 
-            variant="contained"
-            color="secondary"
-            size="small"
-            startIcon={<AddIcon sx={{ fontSize: '16px !important' }} />}
-            onClick={() => addTime(1)}
-            aria-label="Add 1 minute to timer"
-            sx={{
-              minWidth: '60px',
-              px: 1,
-              fontSize: '0.875rem',
-              '@media (max-width:480px)': {
-                minWidth: '55px',
-                px: 0.75,
-                fontSize: '0.8rem',
-              },
-              '@media (max-width:360px)': {
-                minWidth: '50px',
-                px: 0.5,
-                fontSize: '0.75rem',
-              },
-            }}
-          >
-            1m
-          </Button>
-          <Button 
-            variant="contained"
-            color="secondary"
-            size="small"
-            startIcon={<AddIcon sx={{ fontSize: '16px !important' }} />}
-            onClick={() => addTime(5)}
-            aria-label="Add 5 minutes to timer"
-            sx={{
-              minWidth: '60px',
-              px: 1,
-              fontSize: '0.875rem',
-              '@media (max-width:480px)': {
-                minWidth: '55px',
-                px: 0.75,
-                fontSize: '0.8rem',
-              },
-              '@media (max-width:360px)': {
-                minWidth: '50px',
-                px: 0.5,
-                fontSize: '0.75rem',
-              },
-            }}
-          >
-            5m
-          </Button>
-        </Stack>
+          <CircularProgress
+              variant="determinate"
+              value={progress}
+              size={200}
+              thickness={4}
+              sx={{
+                color: progressColor,
+                '& .MuiCircularProgress-circle': {
+                  strokeLinecap: 'round',
+                  transition: 'stroke-dashoffset 0.3s ease, stroke 0.5s ease',
+                },
+              }}
+            />
+          <CircularProgress
+              variant="determinate"
+              value={100}
+              size={200}
+              thickness={4}
+              sx={{
+                color: 'divider',
+                position: 'absolute',
+                opacity: 0.3,
+              }}
+            />
+            <Box 
+              sx={{ 
+                position: 'absolute',
+                textAlign: 'center',
+                fontFamily: 'Courier New, monospace',
+              }}
+              role="timer"
+              aria-label={`Timer showing ${formatTime(remainingSeconds)} remaining out of ${formatTime(totalSeconds)} total`}
+              aria-live="polite"
+            >
+              <Typography 
+                variant="h2" 
+                component="div"
+                sx={{ 
+                  fontSize: '2.5rem',
+                  fontWeight: 'bold',
+                  color: 'text.primary',
+                  lineHeight: 1,
+                  fontFamily: 'Courier New, monospace',
+                  '@media (max-width:480px)': {
+                    fontSize: '2.25rem',
+                  },
+                  '@media (max-width:360px)': {
+                    fontSize: '2rem',
+                  },
+                '@media (max-height:600px) and (orientation: landscape)': {
+                  fontSize: '1.8rem',
+                },
+                }}
+              >
+                {formatTime(remainingSeconds)}
+              </Typography>
+              <Typography 
+                variant="body1" 
+                component="div"
+                sx={{ 
+                  fontSize: '1rem',
+                  color: 'text.secondary',
+                  mt: 0.5,
+                  fontFamily: 'Courier New, monospace',
+                  '@media (max-width:480px)': {
+                    fontSize: '0.875rem',
+                  },
+                  '@media (max-width:360px)': {
+                    fontSize: '0.75rem',
+                  },
+                '@media (max-height:600px) and (orientation: landscape)': {
+                  fontSize: '0.8rem',
+                },
+                }}
+              >
+                / {formatTime(totalSeconds)}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
 
+      {/* Controls Section */}
+      <Box 
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          flex: 1,
+          minHeight: 0,
+          '@media (max-height:600px) and (orientation: landscape)': {
+            flex: '1 1 auto',
+            justifyContent: 'center',
+            maxWidth: '400px',
+          },
+        }}
+      >
         <Stack 
-          direction="row" 
-          spacing={2} 
-          justifyContent="center"
-          sx={{
-            '@media (max-width:480px)': {
-              gap: 1.5,
+          spacing={3} 
+          sx={{ 
+            width: '100%',
+            '@media (max-height:600px) and (orientation: landscape)': {
+              spacing: 2,
+              justifyContent: 'center',
+              alignItems: 'center',
             },
           }}
         >
-          {!isRunning ? (
-            <Button 
-              variant="contained"
-              color="primary"
-              size="large"
-              startIcon={<PlayArrow />}
-              onClick={handleStart}
-              disabled={remainingSeconds === 0}
-              aria-label={`Start timer for ${formatTime(totalSeconds)}`}
+            {/* Timer Adjustment Buttons */}
+            <Stack 
+              direction="row" 
+              spacing={0.5} 
+              justifyContent="center" 
+              flexWrap="wrap"
+              sx={{
+                gap: 0.5,
+                '@media (max-width:480px)': {
+                  gap: 0.375,
+                },
+                '@media (max-width:360px)': {
+                  gap: 0.25,
+                },
+                '@media (max-height:600px) and (orientation: landscape)': {
+                  gap: 0.5,
+                  justifyContent: 'center',
+                },
+              }}
             >
-              Start
-            </Button>
-          ) : (
-            <Button 
-              variant="contained"
-              color="warning"
-              size="large"
-              startIcon={<Pause />}
-              onClick={handlePause}
-              aria-label="Pause timer"
+              <Button 
+                variant="contained"
+                color="error"
+                size="small"
+                startIcon={<RemoveIcon sx={{ fontSize: '16px !important' }} />}
+                onClick={() => removeTime(5)}
+                disabled={totalSeconds <= 300}
+                aria-label="Remove 5 minutes from timer"
+                sx={{
+                  minWidth: '60px',
+                  px: 1,
+                  fontSize: '0.875rem',
+                  '@media (max-width:480px)': {
+                    minWidth: '55px',
+                    px: 0.75,
+                    fontSize: '0.8rem',
+                  },
+                  '@media (max-width:360px)': {
+                    minWidth: '50px',
+                    px: 0.5,
+                    fontSize: '0.75rem',
+                  },
+                  '@media (max-height:600px) and (orientation: landscape)': {
+                    minWidth: '70px',
+                    fontSize: '0.8rem',
+                  },
+                }}
+              >
+                5m
+              </Button>
+              <Button 
+                variant="contained"
+                color="error"
+                size="small"
+                startIcon={<RemoveIcon sx={{ fontSize: '16px !important' }} />}
+                onClick={() => removeTime(1)}
+                disabled={totalSeconds <= 60}
+                aria-label="Remove 1 minute from timer"
+                sx={{
+                  minWidth: '60px',
+                  px: 1,
+                  fontSize: '0.875rem',
+                  '@media (max-width:480px)': {
+                    minWidth: '55px',
+                    px: 0.75,
+                    fontSize: '0.8rem',
+                  },
+                  '@media (max-width:360px)': {
+                    minWidth: '50px',
+                    px: 0.5,
+                    fontSize: '0.75rem',
+                  },
+                  '@media (max-height:600px) and (orientation: landscape)': {
+                    minWidth: '70px',
+                    fontSize: '0.8rem',
+                  },
+                }}
+              >
+                1m
+              </Button>
+              <Button 
+                variant="contained"
+                color="secondary"
+                size="small"
+                startIcon={<AddIcon sx={{ fontSize: '16px !important' }} />}
+                onClick={() => addTime(1)}
+                aria-label="Add 1 minute to timer"
+                sx={{
+                  minWidth: '60px',
+                  px: 1,
+                  fontSize: '0.875rem',
+                  '@media (max-width:480px)': {
+                    minWidth: '55px',
+                    px: 0.75,
+                    fontSize: '0.8rem',
+                  },
+                  '@media (max-width:360px)': {
+                    minWidth: '50px',
+                    px: 0.5,
+                    fontSize: '0.75rem',
+                  },
+                  '@media (max-height:600px) and (orientation: landscape)': {
+                    minWidth: '70px',
+                    fontSize: '0.8rem',
+                  },
+                }}
+              >
+                1m
+              </Button>
+              <Button 
+                variant="contained"
+                color="secondary"
+                size="small"
+                startIcon={<AddIcon sx={{ fontSize: '16px !important' }} />}
+                onClick={() => addTime(5)}
+                aria-label="Add 5 minutes to timer"
+                sx={{
+                  minWidth: '60px',
+                  px: 1,
+                  fontSize: '0.875rem',
+                  '@media (max-width:480px)': {
+                    minWidth: '55px',
+                    px: 0.75,
+                    fontSize: '0.8rem',
+                  },
+                  '@media (max-width:360px)': {
+                    minWidth: '50px',
+                    px: 0.5,
+                    fontSize: '0.75rem',
+                  },
+                  '@media (max-height:600px) and (orientation: landscape)': {
+                    minWidth: '70px',
+                    fontSize: '0.8rem',
+                  },
+                }}
+              >
+                5m
+              </Button>
+            </Stack>
+
+            {/* Control Buttons */}
+            <Stack 
+              direction="row" 
+              spacing={2} 
+              justifyContent="center"
+              sx={{
+                '@media (max-width:480px)': {
+                  gap: 1.5,
+                },
+                '@media (max-height:600px) and (orientation: landscape)': {
+                  gap: 1.5,
+                  justifyContent: 'center',
+                },
+              }}
             >
-              Pause
-            </Button>
-          )}
-          <Button 
-            variant="contained"
-            sx={{ 
-              backgroundColor: 'grey.500',
-              '&:hover': {
-                backgroundColor: 'grey.600',
-              },
-            }}
-            size="large"
-            startIcon={<Refresh />}
-            onClick={handleReset}
-            aria-label="Reset timer to original duration"
-          >
-            Reset
-          </Button>
-        </Stack>
-      </Stack>
+              {!isRunning ? (
+                <Button 
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  startIcon={<PlayArrow />}
+                  onClick={handleStart}
+                  disabled={remainingSeconds === 0}
+                  aria-label={`Start timer for ${formatTime(totalSeconds)}`}
+                  sx={{
+                    '@media (max-height:600px) and (orientation: landscape)': {
+                      minWidth: 'auto',
+                    },
+                  }}
+                >
+                  Start
+                </Button>
+              ) : (
+                <Button 
+                  variant="contained"
+                  color="warning"
+                  size="large"
+                  startIcon={<Pause />}
+                  onClick={handlePause}
+                  aria-label="Pause timer"
+                  sx={{
+                    '@media (max-height:600px) and (orientation: landscape)': {
+                      minWidth: 'auto',
+                    },
+                  }}
+                >
+                  Pause
+                </Button>
+              )}
+              <Button 
+                variant="contained"
+                sx={{ 
+                  backgroundColor: 'grey.500',
+                  '&:hover': {
+                    backgroundColor: 'grey.600',
+                  },
+                  '@media (max-height:600px) and (orientation: landscape)': {
+                    minWidth: 'auto',
+                  },
+                }}
+                size="large"
+                startIcon={<Refresh />}
+                onClick={handleReset}
+                aria-label="Reset timer to original duration"
+              >
+                Reset
+              </Button>
+            </Stack>
+          </Stack>
+        </Box>
+      </Box>
 
       <Dialog
         open={Boolean(isComplete)}
@@ -770,6 +854,6 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </>
   )
 }

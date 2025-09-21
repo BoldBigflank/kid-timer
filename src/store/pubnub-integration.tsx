@@ -110,13 +110,47 @@ function PubNubIntegrationComponent({
     }
   }, [syncTimerState, setConnected])
 
-  // Update current time every second
+  // Update current time when the display is supposed to change next
   useEffect(() => {
-    const interval = setInterval(() => {
-      updateCurrentTime(Date.now())
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [updateCurrentTime])
+    let timeoutId: number | null = null
+
+    const scheduleNextUpdate = () => {
+      const now = Date.now()
+      updateCurrentTime(now)
+
+      // Calculate when the next display change should occur
+      let nextUpdateMs = 1000 // Default to 1 second if we can't determine better timing
+
+      if (timer.isRunning && timer.endTime) {
+        const remainingMs = Math.max(0, timer.endTime - now)
+        
+        if (remainingMs > 0) {
+          // Calculate when the next second boundary will be crossed
+          // For example: if remainingMs is 65432ms (1:05.432), we want to update when it becomes 65000ms (1:05.000)
+          const remainingSeconds = Math.ceil(remainingMs / 1000)
+          const msUntilNextSecond = remainingMs - ((remainingSeconds - 1) * 1000)
+          nextUpdateMs = Math.max(100, msUntilNextSecond) // Minimum 100ms to avoid excessive updates
+        } else {
+          // Timer should complete, update immediately
+          nextUpdateMs = 0
+        }
+      }
+
+      // Schedule the next update
+      timeoutId = setTimeout(() => {
+        scheduleNextUpdate()
+      }, nextUpdateMs)
+    }
+
+    // Start the update cycle
+    scheduleNextUpdate()
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [updateCurrentTime, timer.isRunning, timer.endTime])
 
   // Publish state changes to PubNub
   useEffect(() => {

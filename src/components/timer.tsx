@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'preact/hooks'
 import { connect } from 'redux-zero/preact'
-import { useDynamicFavicon } from './use-dynamic-favicon'
-import { useWakeLock } from './use-wake-lock'
+import { useDynamicFavicon } from '../hooks/use-dynamic-favicon'
+import { useWakeLock } from '../hooks/use-wake-lock'
 import { 
   Box, 
   Button, 
@@ -22,14 +22,13 @@ import {
   Add as AddIcon,
   Remove as RemoveIcon
 } from '@mui/icons-material'
-import actions from './store/actions'
-import type { AppState } from './store'
+import actions from '../store/actions'
+import type { AppState } from '../store'
 
 interface TimerProps {
   initialMinutes?: number
   // Redux Zero props
   timer: AppState['timer']
-  ui: AppState['ui']
   startTimer: () => void
   pauseTimer: () => void
   resetTimer: (initialMinutes?: number) => void
@@ -40,7 +39,6 @@ interface TimerProps {
 function TimerComponent({ 
   initialMinutes = 5,
   timer,
-  ui,
   startTimer,
   pauseTimer,
   resetTimer,
@@ -49,7 +47,7 @@ function TimerComponent({
 }: TimerProps) {
   const { setWakeLockActive, isSupported: wakeLockSupported } = useWakeLock()
   
-  console.log('🔍 Timer render - Redux state:', timer, 'UI state:', ui)
+  // console.log('🔍 Timer render - Redux state:', timer, 'UI state:', ui)
 
   // Manage wake lock based on timer running state
   useEffect(() => {
@@ -93,24 +91,19 @@ function TimerComponent({
   
   // Calculate remaining time based on current state
   let remainingMs: number
+  
+  // Simplified logic: prioritize explicit states over timestamp calculations
   if (timer.isRunning && timer.endTime) {
     // Timer is running - calculate remaining time from end time using real-time
     remainingMs = Math.max(0, timer.endTime - Date.now())
-  } else if (!timer.isRunning && timer.startTime && timer.endTime) {
-    // Timer was completed - check if it actually completed
-    const timeRemaining = Math.max(0, timer.endTime - ui.currentTime)
-    if (timeRemaining === 0) {
-      // Timer completed - show 0 remaining time
-      remainingMs = 0
-    } else {
-      // This shouldn't happen with the new pause logic, but handle it gracefully
-      remainingMs = timer.durationMs
-    }
-  } else if (!timer.isRunning && timer.pausedRemainingMs !== undefined) {
+  } else if (timer.pausedRemainingMs !== undefined && timer.pausedRemainingMs !== null) {
     // Timer was paused - use the stored paused remaining time
     remainingMs = timer.pausedRemainingMs
+  } else if (timer.isComplete) {
+    // Timer is explicitly marked as complete - show 0 remaining time
+    remainingMs = 0
   } else {
-    // Timer not started or reset - use full duration
+    // Timer not started, reset, or in any other state - use full duration
     remainingMs = timer.durationMs
   }
   
@@ -628,6 +621,6 @@ function TimerComponent({
 
 // Connect the Timer component to Redux Zero
 export const Timer = connect(
-  ({ timer, ui }: AppState) => ({ timer, ui }),
+  ({ timer }: AppState) => ({ timer }),
   actions
 )(TimerComponent)

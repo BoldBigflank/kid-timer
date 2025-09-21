@@ -1,8 +1,8 @@
 import { render } from 'preact'
 import CssBaseline from '@mui/material/CssBaseline'
 import { Provider } from 'redux-zero/preact'
-import { AppThemeProvider } from './theme-context'
-import { App } from './app.tsx'
+import { AppThemeProvider } from './contexts/theme-context'
+import { App } from './components/app'
 import store from './store'
 import { PubNubIntegrationProvider } from './store/pubnub-integration'
 

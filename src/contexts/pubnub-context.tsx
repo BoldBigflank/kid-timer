@@ -1,16 +1,8 @@
 import { createContext } from 'preact'
 import { useContext, useEffect, useState, useRef } from 'preact/hooks'
 import PubNub from 'pubnub'
-import { PUBNUB_CONFIG, TIMER_CHANNEL, validatePubNubConfig } from './secrets'
-
-export interface TimerState {
-  durationMs: number // Total duration in milliseconds
-  startTime: number | null // Epoch timestamp when timer started (null if not started)
-  endTime: number | null // Epoch timestamp when timer should end (null if not started)
-  isRunning: boolean
-  pausedRemainingMs?: number // Remaining time when paused (null if not paused)
-  lastUpdated: number // When this state was published
-}
+import { PUBNUB_CONFIG, TIMER_CHANNEL, validatePubNubConfig } from '../config/config'
+import type { TimerState } from '../store'
 
 interface PubNubContextType {
   publishTimerState: (state: TimerState) => void

@@ -1,14 +1,14 @@
 import { connect } from 'redux-zero/preact'
 import { Timer } from './timer'
-import { useTheme } from './theme-context'
-import { TIMER_CHANNEL } from './secrets'
+import { useTheme } from '../contexts/theme-context'
+import { TIMER_CHANNEL } from '../config/config'
 import { Container, Typography, Box, Chip, IconButton, Tooltip } from '@mui/material'
 import { 
   FiberManualRecord as FiberManualRecordIcon,
   LightMode as LightModeIcon,
   DarkMode as DarkModeIcon
 } from '@mui/icons-material'
-import type { AppState } from './store'
+import type { AppState } from '../store'
 
 interface AppContentProps {
   timer: AppState['timer']

@@ -2,7 +2,7 @@ import { createContext } from 'preact'
 import { useContext, useEffect, useRef } from 'preact/hooks'
 import { connect } from 'redux-zero/preact'
 import PubNub from 'pubnub'
-import { PUBNUB_CONFIG, TIMER_CHANNEL, validatePubNubConfig } from '../secrets'
+import { PUBNUB_CONFIG, TIMER_CHANNEL, validatePubNubConfig } from '../config/config'
 import actions from './actions'
 import type { AppState } from './index'
 
@@ -136,7 +136,7 @@ function PubNubIntegrationComponent({
         startTime: timer.startTime,
         endTime: timer.endTime,
         isRunning: timer.isRunning,
-        pausedRemainingMs: timer.pausedRemainingMs,
+        pausedRemainingMs: timer.pausedRemainingMs ?? null,
         lastUpdated: timer.lastUpdated
       }
 
@@ -153,7 +153,7 @@ function PubNubIntegrationComponent({
         console.error('❌ Failed to publish timer state:', error)
       })
     }
-  }, [timer, ui.isConnected])
+  }, [timer.durationMs, timer.startTime, timer.endTime, timer.isRunning, timer.pausedRemainingMs, ui.isConnected])
 
   return (
     <PubNubIntegrationContext.Provider value={{ pubnub: pubnubRef.current }}>

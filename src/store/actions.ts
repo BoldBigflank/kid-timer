@@ -27,7 +27,7 @@ export interface TimerActions {
 // Helper function to calculate computed states
 const calculateComputedState = (timer: AppState['timer'], currentTime: number) => {
   const isComplete = !timer.isRunning && timer.startTime && timer.endTime && currentTime >= timer.endTime
-  const isPaused = !timer.isRunning && timer.pausedRemainingMs !== undefined
+  const isPaused = !timer.isRunning && timer.pausedRemainingMs !== undefined && timer.pausedRemainingMs !== null
   
   return {
     ...timer,
@@ -36,7 +36,7 @@ const calculateComputedState = (timer: AppState['timer'], currentTime: number) =
   }
 }
 
-const actions = (store: any): TimerActions => ({
+const actions = (_store: any): TimerActions => ({
   startTimer: (state: AppState) => {
     const now = Date.now()
     let timeToRun = state.timer.durationMs
@@ -96,7 +96,8 @@ const actions = (store: any): TimerActions => ({
     const initialDurationMs = initialMinutes * 60 * 1000
     const now = Date.now()
     
-    const newTimer = calculateComputedState({
+    // Don't use calculateComputedState for reset - we want explicit control
+    const newTimer = {
       durationMs: initialDurationMs,
       startTime: null,
       endTime: null,
@@ -105,7 +106,7 @@ const actions = (store: any): TimerActions => ({
       lastUpdated: now,
       isComplete: false,
       isPaused: false
-    }, state.ui.currentTime)
+    }
 
     console.log('🔄 Redux: Resetting timer to', initialMinutes, 'minutes')
     
@@ -202,12 +203,13 @@ const actions = (store: any): TimerActions => ({
 
   syncTimerState: (state: AppState, timerState: any) => {
     // Sync with incoming PubNub state, but preserve computed states
+    // Convert null back to undefined for pausedRemainingMs (PubNub converts undefined to null)
     const newTimer = calculateComputedState({
       durationMs: timerState.durationMs,
       startTime: timerState.startTime,
       endTime: timerState.endTime,
       isRunning: timerState.isRunning,
-      pausedRemainingMs: timerState.pausedRemainingMs,
+      pausedRemainingMs: timerState.pausedRemainingMs === null ? undefined : timerState.pausedRemainingMs,
       lastUpdated: timerState.lastUpdated,
       isComplete: false, // Will be recalculated
       isPaused: false // Will be recalculated
@@ -232,6 +234,7 @@ const actions = (store: any): TimerActions => ({
   updateCurrentTime: (state: AppState, currentTime: number) => {
     // Update current time and recalculate computed states
     let newTimer = { ...state.timer }
+    let timerChanged = false
     
     // Check if running timer should auto-stop
     if (state.timer.isRunning && state.timer.endTime && currentTime >= state.timer.endTime) {
@@ -241,9 +244,21 @@ const actions = (store: any): TimerActions => ({
         isRunning: false,
         lastUpdated: currentTime
       }
+      timerChanged = true
     }
     
-    newTimer = calculateComputedState(newTimer, currentTime)
+    // Only recalculate computed state if timer actually changed
+    if (timerChanged) {
+      newTimer = calculateComputedState(newTimer, currentTime)
+    } else {
+      // Just update computed states without creating new timer object
+      const computedTimer = calculateComputedState(newTimer, currentTime)
+      // Only update if computed states actually changed
+      if (computedTimer.isComplete !== newTimer.isComplete || computedTimer.isPaused !== newTimer.isPaused) {
+        newTimer = computedTimer
+        timerChanged = true
+      }
+    }
     
     return {
       ...state,
@@ -251,7 +266,7 @@ const actions = (store: any): TimerActions => ({
         ...state.ui,
         currentTime
       },
-      timer: newTimer
+      timer: timerChanged ? newTimer : state.timer // Only update timer if it actually changed
     }
   },
 

@@ -44,4 +44,3 @@ const middlewares = connect ? applyMiddleware(connect(initialState)) : []
 const store = createStore(initialState, middlewares)
 
 export default store
-export type { AppState, TimerState }

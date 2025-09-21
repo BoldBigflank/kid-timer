@@ -1,7 +1,7 @@
 import { createContext } from 'preact'
 import { useContext, useState, useEffect } from 'preact/hooks'
 import { ThemeProvider } from '@mui/material/styles'
-import { createAppTheme } from './theme'
+import { createAppTheme } from '../components/theme'
 
 type ThemeMode = 'light' | 'dark'
 

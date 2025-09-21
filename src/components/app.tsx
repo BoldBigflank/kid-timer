@@ -120,7 +120,7 @@ function AppContentComponent({ timer, ui }: AppContentProps) {
             },
           }}
         >
-          <Tooltip title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}>
+          <Tooltip title={`Current theme: ${mode} mode`}>
             <IconButton 
               onClick={toggleTheme}
               sx={{
@@ -129,9 +129,9 @@ function AppContentComponent({ timer, ui }: AppContentProps) {
                   backgroundColor: 'action.hover',
                 },
               }}
-              aria-label={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}
+              aria-label={`Current theme: ${mode} mode`}
             >
-              {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
+              {mode === 'light' ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>
           </Tooltip>
         </Box>

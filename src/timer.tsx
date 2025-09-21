@@ -447,24 +447,32 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            // Make the circle take up most of the available space
+            width: 'min(80vw, 80vh, 500px)',
+            height: 'min(80vw, 80vh, 500px)',
             '@media (max-width:480px)': {
-              transform: 'scale(0.9)',
+              width: 'min(85vw, 75vh, 400px)',
+              height: 'min(85vw, 75vh, 400px)',
             },
             '@media (max-width:360px)': {
-              transform: 'scale(0.8)',
+              width: 'min(90vw, 70vh, 350px)',
+              height: 'min(90vw, 70vh, 350px)',
             },
             '@media (max-height:600px) and (orientation: landscape)': {
-              transform: 'scale(0.8)',
+              width: 'min(60vw, 85vh, 400px)',
+              height: 'min(60vw, 85vh, 400px)',
             },
           }}
         >
           <CircularProgress
               variant="determinate"
               value={progress}
-              size={200}
-              thickness={4}
+              size="100%"
+              thickness={3}
               sx={{
                 color: progressColor,
+                width: '100%',
+                height: '100%',
                 '& .MuiCircularProgress-circle': {
                   strokeLinecap: 'round',
                   transition: 'stroke-dashoffset 0.3s ease, stroke 0.5s ease',
@@ -474,12 +482,14 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
           <CircularProgress
               variant="determinate"
               value={100}
-              size={200}
-              thickness={4}
+              size="100%"
+              thickness={3}
               sx={{
                 color: 'divider',
                 position: 'absolute',
                 opacity: 0.3,
+                width: '100%',
+                height: '100%',
               }}
             />
             <Box 
@@ -496,20 +506,20 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
                 variant="h2" 
                 component="div"
                 sx={{ 
-                  fontSize: '2.5rem',
+                  fontSize: 'clamp(2.5rem, 8vw, 6rem)',
                   fontWeight: 'bold',
                   color: 'text.primary',
                   lineHeight: 1,
                   fontFamily: 'Courier New, monospace',
                   '@media (max-width:480px)': {
-                    fontSize: '2.25rem',
+                    fontSize: 'clamp(2rem, 7vw, 4.5rem)',
                   },
                   '@media (max-width:360px)': {
-                    fontSize: '2rem',
+                    fontSize: 'clamp(1.8rem, 6vw, 3.5rem)',
                   },
-                '@media (max-height:600px) and (orientation: landscape)': {
-                  fontSize: '1.8rem',
-                },
+                  '@media (max-height:600px) and (orientation: landscape)': {
+                    fontSize: 'clamp(1.5rem, 6vh, 3rem)',
+                  },
                 }}
               >
                 {formatTime(remainingSeconds)}
@@ -518,19 +528,19 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
                 variant="body1" 
                 component="div"
                 sx={{ 
-                  fontSize: '1rem',
+                  fontSize: 'clamp(1rem, 2.5vw, 2rem)',
                   color: 'text.secondary',
                   mt: 0.5,
                   fontFamily: 'Courier New, monospace',
                   '@media (max-width:480px)': {
-                    fontSize: '0.875rem',
+                    fontSize: 'clamp(0.875rem, 2.2vw, 1.5rem)',
                   },
                   '@media (max-width:360px)': {
-                    fontSize: '0.75rem',
+                    fontSize: 'clamp(0.75rem, 2vw, 1.25rem)',
                   },
-                '@media (max-height:600px) and (orientation: landscape)': {
-                  fontSize: '0.8rem',
-                },
+                  '@media (max-height:600px) and (orientation: landscape)': {
+                    fontSize: 'clamp(0.8rem, 2vh, 1.2rem)',
+                  },
                 }}
               >
                 / {formatTime(totalSeconds)}

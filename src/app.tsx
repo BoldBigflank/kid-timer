@@ -1,6 +1,5 @@
-import { useState } from 'preact/hooks'
+import { connect } from 'redux-zero/preact'
 import { Timer } from './timer'
-import { PubNubProvider, usePubNub } from './pubnub-context'
 import { useTheme } from './theme-context'
 import { TIMER_CHANNEL } from './secrets'
 import { Container, Typography, Box, Chip, IconButton, Tooltip } from '@mui/material'
@@ -9,28 +8,26 @@ import {
   LightMode as LightModeIcon,
   DarkMode as DarkModeIcon
 } from '@mui/icons-material'
+import type { AppState } from './store'
 
-interface TimerState {
-  isRunning: boolean
-  isComplete: boolean
-  isPaused: boolean
+interface AppContentProps {
+  timer: AppState['timer']
+  ui: AppState['ui']
 }
 
-function AppContent() {
-  const { isConnected } = usePubNub()
+function AppContentComponent({ timer, ui }: AppContentProps) {
   const { mode, toggleTheme } = useTheme()
-  const [timerState, setTimerState] = useState<TimerState>({ isRunning: false, isComplete: false, isPaused: false })
 
-  // Create background with subtle tinting based on timer state
+  // Create background with subtle tinting based on timer state from Redux store
   const getBackgroundGradient = () => {
     if (mode === 'light') {
-      if (timerState.isComplete) {
+      if (timer.isComplete) {
         // Blue tint for completed state
         return 'linear-gradient(135deg, #f8faff 0%, #e6f3ff 100%)'
-      } else if (timerState.isRunning) {
+      } else if (timer.isRunning) {
         // Red tint for running state  
         return 'linear-gradient(135deg, #fff8f8 0%, #ffe6e6 100%)'
-      } else if (timerState.isPaused) {
+      } else if (timer.isPaused) {
         // Grey tint for paused state
         return 'linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%)'
       } else {
@@ -38,13 +35,13 @@ function AppContent() {
         return 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
       }
     } else {
-      if (timerState.isComplete) {
+      if (timer.isComplete) {
         // Blue tint for completed state (dark mode)
         return 'linear-gradient(135deg, #0f1621 0%, #1a1f3a 100%)'
-      } else if (timerState.isRunning) {
+      } else if (timer.isRunning) {
         // Red tint for running state (dark mode)
         return 'linear-gradient(135deg, #1a0f14 0%, #2e1a1f 100%)'
-      } else if (timerState.isPaused) {
+      } else if (timer.isPaused) {
         // Grey tint for paused state (dark mode)
         return 'linear-gradient(135deg, #141419 0%, #1f1f2e 100%)'
       } else {
@@ -156,13 +153,13 @@ function AppContent() {
         <Tooltip title={`PubNub Channel: ${TIMER_CHANNEL}`}>
           <Chip
             icon={<FiberManualRecordIcon sx={{ fontSize: '8px !important' }} />}
-            label={isConnected ? 'Synced with all users' : 'Connecting...'}
-            color={isConnected ? 'success' : 'error'}
+            label={ui.isConnected ? 'Synced with all users' : 'Connecting...'}
+            color={ui.isConnected ? 'success' : 'error'}
             variant="outlined"
             size="small"
             sx={{
               '& .MuiChip-icon': {
-                animation: isConnected ? 'pulse 2s infinite' : 'none',
+                animation: ui.isConnected ? 'pulse 2s infinite' : 'none',
               },
               '@keyframes pulse': {
                 '0%, 100%': { opacity: 1 },
@@ -192,16 +189,17 @@ function AppContent() {
           },
         }}
       >
-        <Timer initialMinutes={5} onStateChange={setTimerState} />
+        <Timer initialMinutes={5} />
       </Box>
     </Container>
   )
 }
 
+// Connect the AppContent component to Redux Zero
+const AppContent = connect(
+  ({ timer, ui }: AppState) => ({ timer, ui })
+)(AppContentComponent)
+
 export function App() {
-  return (
-    <PubNubProvider>
-      <AppContent />
-    </PubNubProvider>
-  )
+  return <AppContent />
 }

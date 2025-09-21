@@ -214,7 +214,7 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
     remainingMs = durationMs
   }
   
-  const remainingSeconds = Math.floor(remainingMs / 1000)
+  const remainingSeconds = Math.ceil(remainingMs / 1000)
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)

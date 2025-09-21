@@ -25,9 +25,10 @@ import {
 
 interface TimerProps {
   initialMinutes?: number
+  onStateChange?: (state: { isRunning: boolean; isComplete: boolean; isPaused: boolean }) => void
 }
 
-export function Timer({ initialMinutes = 5 }: TimerProps) {
+export function Timer({ initialMinutes = 5, onStateChange }: TimerProps) {
   const { publishTimerState, timerState, isConnected } = usePubNub()
   const { setWakeLockActive, isSupported: wakeLockSupported } = useWakeLock()
   const [durationMs, setDurationMs] = useState(initialMinutes * 60 * 1000)
@@ -227,6 +228,17 @@ export function Timer({ initialMinutes = 5 }: TimerProps) {
   const progress = totalSeconds > 0 ? ((totalSeconds - remainingSeconds) / totalSeconds) * 100 : 0
   const isPaused = !isRunning && timerState?.pausedRemainingMs !== undefined
   const progressColor = isComplete ? '#3b82f6' : isPaused ? '#d1d5db' : '#ef4444' // blue when complete, light grey when paused, red while running
+
+  // Notify parent component of state changes
+  useEffect(() => {
+    if (onStateChange) {
+      onStateChange({ 
+        isRunning, 
+        isComplete: Boolean(isComplete),
+        isPaused: Boolean(isPaused)
+      })
+    }
+  }, [isRunning, isComplete, isPaused, onStateChange])
 
   // Update favicon dynamically with timer progress
   useDynamicFavicon({ 

@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks'
 import { Timer } from './timer'
 import { PubNubProvider, usePubNub } from './pubnub-context'
 import { useTheme } from './theme-context'
@@ -9,9 +10,49 @@ import {
   DarkMode as DarkModeIcon
 } from '@mui/icons-material'
 
+interface TimerState {
+  isRunning: boolean
+  isComplete: boolean
+  isPaused: boolean
+}
+
 function AppContent() {
   const { isConnected } = usePubNub()
   const { mode, toggleTheme } = useTheme()
+  const [timerState, setTimerState] = useState<TimerState>({ isRunning: false, isComplete: false, isPaused: false })
+
+  // Create background with subtle tinting based on timer state
+  const getBackgroundGradient = () => {
+    if (mode === 'light') {
+      if (timerState.isComplete) {
+        // Blue tint for completed state
+        return 'linear-gradient(135deg, #f8faff 0%, #e6f3ff 100%)'
+      } else if (timerState.isRunning) {
+        // Red tint for running state  
+        return 'linear-gradient(135deg, #fff8f8 0%, #ffe6e6 100%)'
+      } else if (timerState.isPaused) {
+        // Grey tint for paused state
+        return 'linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%)'
+      } else {
+        // Default light background
+        return 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
+      }
+    } else {
+      if (timerState.isComplete) {
+        // Blue tint for completed state (dark mode)
+        return 'linear-gradient(135deg, #0f1621 0%, #1a1f3a 100%)'
+      } else if (timerState.isRunning) {
+        // Red tint for running state (dark mode)
+        return 'linear-gradient(135deg, #1a0f14 0%, #2e1a1f 100%)'
+      } else if (timerState.isPaused) {
+        // Grey tint for paused state (dark mode)
+        return 'linear-gradient(135deg, #141419 0%, #1f1f2e 100%)'
+      } else {
+        // Default dark background
+        return 'linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%)'
+      }
+    }
+  }
 
   return (
     <Container 
@@ -25,9 +66,8 @@ function AppContent() {
         justifyContent: 'center',
         py: 2,
         overflow: 'hidden', // Prevent scrolling
-        background: mode === 'light' 
-          ? 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
-          : 'linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%)',
+        background: getBackgroundGradient(),
+        transition: 'background 0.5s ease', // Smooth transition between states
         '@media (max-width:480px)': {
           justifyContent: 'flex-start',
           pt: 2,
@@ -152,7 +192,7 @@ function AppContent() {
           },
         }}
       >
-        <Timer initialMinutes={5} />
+        <Timer initialMinutes={5} onStateChange={setTimerState} />
       </Box>
     </Container>
   )

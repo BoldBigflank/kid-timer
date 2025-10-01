@@ -6,11 +6,6 @@ import {
   Box, 
   Button, 
   Typography, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions,
-  IconButton,
   CircularProgress,
   Stack
 } from '@mui/material'
@@ -18,7 +13,6 @@ import {
   PlayArrow, 
   Pause, 
   Refresh, 
-  Close as CloseIcon,
   Add as AddIcon,
   Remove as RemoveIcon
 } from '@mui/icons-material'
@@ -57,34 +51,22 @@ function TimerComponent({
     }
   }, [timer.isRunning, setWakeLockActive, wakeLockSupported])
 
-  // Define handleReset early so it can be used in useEffect
+  // Define handleReset
   const handleReset = useCallback(() => {
-    console.log('🔄 Resetting timer from completed state')
+    console.log('🔄 Resetting timer')
     resetTimer(initialMinutes)
   }, [initialMinutes, resetTimer])
 
-  // Handle keyboard events for modal
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && timer.isComplete) {
-        console.log('⌨️ Escape key pressed, closing modal')
-        handleReset()
-      }
-    }
-
-    if (timer.isComplete) {
-      document.addEventListener('keydown', handleKeyDown)
-      // Focus management - focus the modal content when it opens
-      const modalContent = document.querySelector('.modal-content') as HTMLElement
-      if (modalContent) {
-        modalContent.focus()
-      }
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [timer.isComplete, handleReset])
+  // Define handleRestart - resets and starts the timer with current duration
+  const handleRestart = useCallback(() => {
+    console.log('🔄 Restarting timer with current duration')
+    const currentMinutes = timer.durationMs / (60 * 1000)
+    resetTimer(currentMinutes)
+    // Use setTimeout to ensure the reset completes before starting
+    setTimeout(() => {
+      startTimer()
+    }, 0)
+  }, [timer.durationMs, resetTimer, startTimer])
 
   // Calculate derived values from timestamps
   const totalSeconds = Math.floor(timer.durationMs / 1000)
@@ -150,7 +132,6 @@ function TimerComponent({
   }
 
   return (
-    <>
     <Box 
       sx={{ 
         width: '100%',
@@ -248,40 +229,78 @@ function TimerComponent({
                 fontFamily: 'Courier New, monospace',
               }}
               role="timer"
-              aria-label={`Timer showing ${formatTime(remainingSeconds)} remaining out of ${formatTime(totalSeconds)} total`}
+              aria-label={timer.isComplete ? "Time's up!" : `Timer showing ${formatTime(remainingSeconds)} remaining out of ${formatTime(totalSeconds)} total`}
               aria-live="polite"
             >
-              <Typography 
-                variant="h2" 
-                component="div"
-                sx={{ 
-                  fontSize: 'calc(var(--circle-size) * 0.18)',
-                  fontWeight: 'bold',
-                  color: 'text.primary',
-                  lineHeight: 1,
-                  fontFamily: 'Courier New, monospace',
-                  '@media (max-width:480px)': {
-                    fontSize: 'calc(var(--circle-size) * 0.22)',
-                  },
-                }}
-              >
-                {formatTime(remainingSeconds)}
-              </Typography>
-              <Typography 
-                variant="body1" 
-                component="div"
-                sx={{ 
-                  fontSize: 'calc(var(--circle-size) * 0.06)',
-                  color: 'text.secondary',
-                  mt: 0.5,
-                  fontFamily: 'Courier New, monospace',
-                  '@media (max-width:480px)': {
-                    fontSize: 'calc(var(--circle-size) * 0.08)',
-                  },
-                }}
-              >
-                / {formatTime(totalSeconds)}
-              </Typography>
+              {timer.isComplete ? (
+                <>
+                  <Typography 
+                    variant="h2" 
+                    component="div"
+                    sx={{ 
+                      fontSize: 'calc(var(--circle-size) * 0.15)',
+                      fontWeight: 'bold',
+                      color: 'primary.main',
+                      lineHeight: 1,
+                      fontFamily: 'Courier New, monospace',
+                      '@media (max-width:480px)': {
+                        fontSize: 'calc(var(--circle-size) * 0.18)',
+                      },
+                    }}
+                  >
+                    TIME'S UP
+                  </Typography>
+                  <Typography 
+                    variant="body1" 
+                    component="div"
+                    sx={{ 
+                      fontSize: 'calc(var(--circle-size) * 0.06)',
+                      color: 'text.secondary',
+                      mt: 0.5,
+                      fontFamily: 'Courier New, monospace',
+                      '@media (max-width:480px)': {
+                        fontSize: 'calc(var(--circle-size) * 0.08)',
+                      },
+                    }}
+                  >
+                    / {formatTime(totalSeconds)}
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <Typography 
+                    variant="h2" 
+                    component="div"
+                    sx={{ 
+                      fontSize: 'calc(var(--circle-size) * 0.18)',
+                      fontWeight: 'bold',
+                      color: 'text.primary',
+                      lineHeight: 1,
+                      fontFamily: 'Courier New, monospace',
+                      '@media (max-width:480px)': {
+                        fontSize: 'calc(var(--circle-size) * 0.22)',
+                      },
+                    }}
+                  >
+                    {formatTime(remainingSeconds)}
+                  </Typography>
+                  <Typography 
+                    variant="body1" 
+                    component="div"
+                    sx={{ 
+                      fontSize: 'calc(var(--circle-size) * 0.06)',
+                      color: 'text.secondary',
+                      mt: 0.5,
+                      fontFamily: 'Courier New, monospace',
+                      '@media (max-width:480px)': {
+                        fontSize: 'calc(var(--circle-size) * 0.08)',
+                      },
+                    }}
+                  >
+                    / {formatTime(totalSeconds)}
+                  </Typography>
+                </>
+              )}
             </Box>
           </Box>
         </Box>
@@ -338,7 +357,7 @@ function TimerComponent({
                 size="small"
                 startIcon={<RemoveIcon sx={{ fontSize: '16px !important' }} />}
                 onClick={() => handleRemoveTime(5)}
-                disabled={totalSeconds <= 300}
+                disabled={totalSeconds <= 300 || timer.isComplete}
                 aria-label="Remove 5 minutes from timer"
                 sx={{
                   minWidth: '60px',
@@ -368,7 +387,7 @@ function TimerComponent({
                 size="small"
                 startIcon={<RemoveIcon sx={{ fontSize: '16px !important' }} />}
                 onClick={() => handleRemoveTime(1)}
-                disabled={totalSeconds <= 60}
+                disabled={totalSeconds <= 60 || timer.isComplete}
                 aria-label="Remove 1 minute from timer"
                 sx={{
                   minWidth: '60px',
@@ -398,6 +417,7 @@ function TimerComponent({
                 size="small"
                 startIcon={<AddIcon sx={{ fontSize: '16px !important' }} />}
                 onClick={() => handleAddTime(1)}
+                disabled={timer.isComplete}
                 aria-label="Add 1 minute to timer"
                 sx={{
                   minWidth: '60px',
@@ -427,6 +447,7 @@ function TimerComponent({
                 size="small"
                 startIcon={<AddIcon sx={{ fontSize: '16px !important' }} />}
                 onClick={() => handleAddTime(5)}
+                disabled={timer.isComplete}
                 aria-label="Add 5 minutes to timer"
                 sx={{
                   minWidth: '60px',
@@ -467,7 +488,23 @@ function TimerComponent({
                 },
               }}
             >
-              {!timer.isRunning ? (
+              {timer.isComplete ? (
+                <Button 
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  startIcon={<Refresh />}
+                  onClick={handleRestart}
+                  aria-label="Restart timer"
+                  sx={{
+                    '@media (max-height:600px) and (orientation: landscape)': {
+                      minWidth: 'auto',
+                    },
+                  }}
+                >
+                  Restart
+                </Button>
+              ) : !timer.isRunning ? (
                 <Button 
                   variant="contained"
                   color="primary"
@@ -523,85 +560,6 @@ function TimerComponent({
           </Stack>
         </Box>
       </Box>
-
-      <Dialog
-        open={timer.isComplete}
-        onClose={handleReset}
-        aria-labelledby="completion-dialog-title"
-        maxWidth="sm"
-        fullWidth
-        sx={{
-          '& .MuiDialog-paper': {
-            borderRadius: '1rem',
-            maxWidth: 400,
-            width: '90%',
-            '@media (max-width:480px)': {
-              width: '95%',
-              m: 2,
-            },
-          },
-        }}
-      >
-        <DialogTitle 
-          id="completion-dialog-title"
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between',
-            pb: 1,
-          }}
-        >
-          <span>⏰ Time's Up!</span>
-          <IconButton
-            aria-label="close"
-            onClick={handleReset}
-            sx={{
-              color: 'grey.500',
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" align="center" sx={{ mb: 2 }}>
-            The timer has finished!
-          </Typography>
-        </DialogContent>
-        <DialogActions 
-          sx={{ 
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: { xs: 1, sm: 1.5 },
-            p: 2,
-            pt: 0,
-            '& > :not(style)': {
-              width: { xs: '100%', sm: 'auto' },
-            },
-          }}
-        >
-          <Button 
-            variant="contained"
-            color="primary"
-            onClick={handleStart}
-            aria-label="Start timer again"
-          >
-            Start Again
-          </Button>
-          <Button 
-            variant="contained"
-            sx={{ 
-              backgroundColor: 'grey.500',
-              '&:hover': {
-                backgroundColor: 'grey.600',
-              },
-            }}
-            onClick={handleReset}
-            aria-label="Reset timer"
-          >
-            Reset
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
   )
 }
 

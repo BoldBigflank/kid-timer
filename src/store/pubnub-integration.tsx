@@ -90,7 +90,7 @@ function PubNubIntegrationComponent({
       count: 1
     }).then((response) => {
       console.log('📜 History response:', response)
-      if (response.messages.length > 0) {
+      if (response.messages && response.messages.length > 0) {
         const latestState = response.messages[0].entry
         console.log('📜 Loaded timer state from history:', latestState)
         syncTimerState(latestState)

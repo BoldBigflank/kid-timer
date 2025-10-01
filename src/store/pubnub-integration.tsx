@@ -31,6 +31,7 @@ function PubNubIntegrationComponent({
   const pubnubRef = useRef<PubNub | null>(null)
   const lastPublishedState = useRef<any>(null)
   const isInitialized = useRef(false)
+  const hasLoadedHistory = useRef(false)
 
   // Initialize PubNub
   useEffect(() => {
@@ -93,12 +94,19 @@ function PubNubIntegrationComponent({
         const latestState = response.messages[0].entry
         console.log('📜 Loaded timer state from history:', latestState)
         syncTimerState(latestState)
+        // Wait a tick to ensure the state has been synced before allowing publish
+        setTimeout(() => {
+          hasLoadedHistory.current = true
+          isInitialized.current = true
+        }, 0)
       } else {
-        console.log('📜 No timer history found')
+        console.log('📜 No timer history found - using initial state')
+        hasLoadedHistory.current = true
+        isInitialized.current = true
       }
-      isInitialized.current = true
     }).catch((error) => {
       console.error('❌ Failed to get timer history:', error)
+      hasLoadedHistory.current = true
       isInitialized.current = true
     })
 
@@ -154,7 +162,13 @@ function PubNubIntegrationComponent({
 
   // Publish state changes to PubNub
   useEffect(() => {
-    if (!pubnubRef.current || !ui.isConnected || !isInitialized.current) return
+    if (!pubnubRef.current || !ui.isConnected || !isInitialized.current || !hasLoadedHistory.current) return
+
+    // Don't publish if this update came from PubNub to prevent loops
+    if (ui.lastUpdateFromPubNub) {
+      console.log('⏸️ Skipping publish - update originated from PubNub')
+      return
+    }
 
     // Check if state has changed
     const stateChanged = !lastPublishedState.current ||
@@ -187,7 +201,7 @@ function PubNubIntegrationComponent({
         console.error('❌ Failed to publish timer state:', error)
       })
     }
-  }, [timer.durationMs, timer.startTime, timer.endTime, timer.isRunning, timer.pausedRemainingMs, ui.isConnected])
+  }, [timer.durationMs, timer.startTime, timer.endTime, timer.isRunning, timer.pausedRemainingMs, ui.isConnected, ui.lastUpdateFromPubNub])
 
   return (
     <PubNubIntegrationContext.Provider value={{ pubnub: pubnubRef.current }}>

@@ -62,7 +62,11 @@ const actions = (_store: any): TimerActions => ({
     
     return {
       ...state,
-      timer: newTimer
+      timer: newTimer,
+      ui: {
+        ...state.ui,
+        lastUpdateFromPubNub: false // Mark this as a local update
+      }
     }
   },
 
@@ -88,7 +92,11 @@ const actions = (_store: any): TimerActions => ({
     
     return {
       ...state,
-      timer: newTimer
+      timer: newTimer,
+      ui: {
+        ...state.ui,
+        lastUpdateFromPubNub: false // Mark this as a local update
+      }
     }
   },
 
@@ -112,7 +120,11 @@ const actions = (_store: any): TimerActions => ({
     
     return {
       ...state,
-      timer: newTimer
+      timer: newTimer,
+      ui: {
+        ...state.ui,
+        lastUpdateFromPubNub: false // Mark this as a local update
+      }
     }
   },
 
@@ -147,7 +159,11 @@ const actions = (_store: any): TimerActions => ({
     
     return {
       ...state,
-      timer: newTimer
+      timer: newTimer,
+      ui: {
+        ...state.ui,
+        lastUpdateFromPubNub: false // Mark this as a local update
+      }
     }
   },
 
@@ -184,7 +200,11 @@ const actions = (_store: any): TimerActions => ({
     
     return {
       ...state,
-      timer: newTimer
+      timer: newTimer,
+      ui: {
+        ...state.ui,
+        lastUpdateFromPubNub: false // Mark this as a local update
+      }
     }
   },
 
@@ -197,7 +217,11 @@ const actions = (_store: any): TimerActions => ({
 
     return {
       ...state,
-      timer: newTimer
+      timer: newTimer,
+      ui: {
+        ...state.ui,
+        lastUpdateFromPubNub: false // Mark this as a local update
+      }
     }
   },
 
@@ -219,7 +243,11 @@ const actions = (_store: any): TimerActions => ({
     
     return {
       ...state,
-      timer: newTimer
+      timer: newTimer,
+      ui: {
+        ...state.ui,
+        lastUpdateFromPubNub: true // Mark this update as coming from PubNub
+      }
     }
   },
 
@@ -264,7 +292,8 @@ const actions = (_store: any): TimerActions => ({
       ...state,
       ui: {
         ...state.ui,
-        currentTime
+        currentTime,
+        lastUpdateFromPubNub: timerChanged ? false : state.ui.lastUpdateFromPubNub // Reset flag if timer changed locally
       },
       timer: timerChanged ? newTimer : state.timer // Only update timer if it actually changed
     }
@@ -275,7 +304,11 @@ const actions = (_store: any): TimerActions => ({
     
     return {
       ...state,
-      timer: newTimer
+      timer: newTimer,
+      ui: {
+        ...state.ui,
+        lastUpdateFromPubNub: false // Mark this as a local update
+      }
     }
   }
 })

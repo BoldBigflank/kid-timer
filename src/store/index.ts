@@ -18,6 +18,7 @@ export interface AppState {
   ui: {
     isConnected: boolean
     currentTime: number // For real-time calculations
+    lastUpdateFromPubNub: boolean // Track if last update came from PubNub
   }
 }
 
@@ -35,6 +36,7 @@ const initialState: AppState = {
   ui: {
     isConnected: false,
     currentTime: Date.now(),
+    lastUpdateFromPubNub: false,
   }
 }
 
